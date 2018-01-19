@@ -1,8 +1,13 @@
 .record-container {
 }
-:global {
+.btn-item {
+  float: left;
+  width: 50%;
+  padding: 10px;
 }
-.am-list-body {
-  height: 210px;
-  overflow: auto;
+:global {
+  .am-list-body {
+    // height: 210px;
+    overflow: auto;
+  }
 }

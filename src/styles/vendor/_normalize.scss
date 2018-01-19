@@ -185,6 +185,12 @@ img {
   border: 0;
 }
 
+
+ul, li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 /**
  * Correct overflow not hidden in IE 9/10/11.
  */

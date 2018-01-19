@@ -1,14 +1,14 @@
 import React from 'react'
 import CameraQutoa from 'components/CameraQutoa'
 import { getBookInfo } from '../../api/getData'
-import { Toast, Modal } from 'antd-mobile'
+import { Toast, Modal, Button } from 'antd-mobile'
 import classes from './RecordPage.scss'
-
+import InfoCard from 'components/InfoCard'
 export default class RecordPage extends React.Component {
   constructor () {
     super()
     this.state = {
-      visible: false
+      visible: true
     }
     this.getCode = this.getCode.bind(this)
     this.onClose = this.onClose.bind(this)
@@ -35,6 +35,12 @@ export default class RecordPage extends React.Component {
   }
   render () {
     const { visible } = this.state
+    const res = {
+      src: '',
+      name: 'test',
+      auth: 'dong',
+      desc: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    }
     return (
       <div className={classes['record-container']}>
         <CameraQutoa getCode={this.getCode} />
@@ -44,7 +50,15 @@ export default class RecordPage extends React.Component {
           onClose={this.onClose}
           animationType="slide-up"
         >
-          <div>11</div>
+          <div>
+            <InfoCard result={res} />
+            <div className={classes['btn-item']}>
+              <Button type="warning">取消</Button>
+            </div>
+            <div className={classes['btn-item']}>
+              <Button type="primary">确定</Button>
+            </div>
+          </div>
         </Modal>
       </div>
     )
