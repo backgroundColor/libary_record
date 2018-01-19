@@ -2,7 +2,7 @@
 import _debug from 'debug'
 import path from 'path'
 import { argv } from 'yargs'
-
+import ip from 'ip'
 const debug = _debug('app:config:_base')
 const config = {
   env : process.env.NODE_ENV || 'development',
@@ -15,11 +15,12 @@ const config = {
   dir_dist   : 'dist',
   dir_server : 'server',
   dir_test   : 'tests',
-
+  host_url   : '',
+  isbn_url : 'https://api.douban.com/v2/book/isbn/',
   // ----------------------------------
   // Server Configuration
   // ----------------------------------
-  server_host : 'localhost',
+  server_host : ip.address(),
   server_port : process.env.PORT || 3000,
 
   // ----------------------------------
@@ -78,7 +79,9 @@ config.globals = {
   '__TEST__'     : config.env === 'test',
   '__DEBUG__'    : config.env === 'development' && !argv.no_debug,
   '__DEBUG_NEW_WINDOW__' : !!argv.nw,
-  '__BASENAME__' : JSON.stringify(process.env.BASENAME || '')
+  '__BASENAME__' : JSON.stringify(process.env.BASENAME || ''),
+  '__HOST_URL__' : JSON.stringify(config.host_url),
+  '__ISBN_URL__' : JSON.stringify(config.isbn_url)
 }
 
 // ------------------------------------

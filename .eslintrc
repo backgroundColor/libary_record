@@ -16,7 +16,9 @@
     "__PROD__"     : false,
     "__DEBUG__"    : false,
     "__DEBUG_NEW_WINDOW__" : false,
-    "__BASENAME__" : false
+    "__BASENAME__" : false,
+    "__HOST_URL__" : false,
+    "__ISBN_URL__" : false
   },
   "rules": {
     "semi" : [2, "never"],
