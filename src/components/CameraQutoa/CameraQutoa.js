@@ -1,6 +1,7 @@
 import React from 'react'
 import Quagga from 'quagga'
 import classes from './CameraQutoa.scss'
+import { ImagePicker } from 'antd-mobile'
 
 type Props = {
   getCode: Function
@@ -9,9 +10,12 @@ export default class CameraQutoa extends React.Component {
   props: Props
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      files: []
+    }
     this.scanStart = this.scanStart.bind(this)
     this.selectImg = this.selectImg.bind(this)
+    this.onChange = this.onChange.bind(this)
   }
 
   // 开始扫描
@@ -47,6 +51,19 @@ export default class CameraQutoa extends React.Component {
       reader.readAsDataURL(file)
     }
   }
+  // 图片选择
+  onChange (files, type, index) {
+    if (files.length !== 1) {
+      files.shift()
+    }
+    this.setState({
+      files: files
+    })
+    // debugger
+    if (files && files.length !== 0) {
+      this.scanStart(files[0].url)
+    }
+  }
   // 根据ISBN 查询图书信息
   getBookDetail (id) {
     if (Object.prototype.toString.call(id) !== '[object Number]') {
@@ -54,11 +71,18 @@ export default class CameraQutoa extends React.Component {
     }
   }
   render () {
+    const { files } = this.state
     return (
       <div className={classes['camera-container']}>
-        <input type="file" onChange={this.selectImg} />camera
+        <ImagePicker
+          files={files}
+          onChange={this.onChange}
+          onImageClick={function (index, fs) { console.log(index, fs) }}
+          multiple={false} />
         <div ref="target"></div>
       </div>
     )
   }
 }
+
+// <input type="file" onChange={this.selectImg} />

@@ -7,7 +7,7 @@ import R from 'ramda'
 import InfoCard from 'components/InfoCard'
 import { connect } from 'react-redux'
 import { changeFormState } from '../../redux/modules/Record/action'
-
+import ListItem from 'components/ListItem'
 const mapActionCreators = { changeFormState }
 const mapStateToProps = (state) => {
   const { formdata } = state.recordReducer
@@ -90,6 +90,7 @@ class RecordPage extends React.Component {
     return (
       <div className={classes['record-container']}>
         <CameraQutoa getCode={this.getCode} />
+        <ListItem />
         <Modal
           popup
           visible={visible}
