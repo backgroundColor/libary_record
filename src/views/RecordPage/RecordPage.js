@@ -25,10 +25,10 @@ class RecordPage extends React.Component {
       visible: false,
       result: {
         src: '',
-        name: 'test',
-        auth: 'dong',
-        factory: 'XXXXXXXXXXXXx',
-        desc: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+        name: '',
+        auth: '',
+        factory: '',
+        desc: ''
       }
     }
     this.getCode = this.getCode.bind(this)
@@ -90,7 +90,9 @@ class RecordPage extends React.Component {
     return (
       <div className={classes['record-container']}>
         <CameraQutoa getCode={this.getCode} />
-        <ListItem />
+        <div className={classes['list-view-container']}>
+          <ListItem />
+        </div>
         <Modal
           popup
           visible={visible}
