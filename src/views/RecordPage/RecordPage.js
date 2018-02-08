@@ -29,7 +29,8 @@ class RecordPage extends React.Component {
         auth: '',
         factory: '',
         desc: ''
-      }
+      },
+      histories: []
     }
     this.getCode = this.getCode.bind(this)
     this.onClose = this.onClose.bind(this)
@@ -40,7 +41,15 @@ class RecordPage extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (!R.equals(nextProps.formdata, this.props.formdata) && !R.isEmpty(nextProps.formdata)) {
       console.log('formdata: ', JSON.stringify(nextProps.formdata, null, 4))
-      this.submitData(JSON.stringify(nextProps.formdata, null, 4))
+      const res = Object.keys(nextProps.formdata).reduce((res, curr) => {
+        if (curr !== 'images') {
+          res[curr] = nextProps.formdata[curr]
+        } else {
+          res[curr] = JSON.parse(nextProps.formdata[curr])
+        }
+        return res
+      }, {})
+      this.submitData(res)
     }
   }
 
@@ -56,7 +65,8 @@ class RecordPage extends React.Component {
           name: res.title,
           auth: res.author.join('&'),
           factory: res.publisher,
-          desc: res.summary
+          desc: res.summary,
+          images: res.images
         },
         visible: true
       })
@@ -80,18 +90,23 @@ class RecordPage extends React.Component {
 
   submitData (val) {
     console.log(val)
+
+    this.props.changeFormState(false)
     this.setState({
-      visible: false
+      visible: false,
+      histories: this.state.histories.concat(val)
     })
   }
   render () {
-    const { visible, result } = this.state
+    const { visible, result, histories } = this.state
 
     return (
       <div className={classes['record-container']}>
         <CameraQutoa getCode={this.getCode} />
         <div className={classes['list-view-container']}>
-          <ListItem />
+          {
+            histories.map((his, item) => <ListItem key={`listItem${item}`} value={his} />)
+          }
         </div>
         <Modal
           popup

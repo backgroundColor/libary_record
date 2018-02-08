@@ -1,9 +1,13 @@
 import React from 'react'
 import classes from './ListItem.scss'
 import FingerTouch from '../FingerTouch'
+type Props = {
+  value: Object
+}
 export default class ListItem extends React.Component {
-  constructor () {
-    super()
+  props: Props
+  constructor (props) {
+    super(props)
     this.handleSwipe = this.handleSwipe.bind(this)
     this.handleDoubleTap = this.handleDoubleTap.bind(this)
   }
@@ -33,7 +37,16 @@ export default class ListItem extends React.Component {
     const targetItem = this.refs['listItem']
     targetItem.style.transform = 'translateX(-80px)'
   }
+
+  modify () {
+    console.log('modify')
+  }
+
+  delete () {
+    console.log('delete')
+  }
   render () {
+    const { value } = this.props
     return (
       <FingerTouch
         onSwipe={this.handleSwipe}
@@ -42,14 +55,14 @@ export default class ListItem extends React.Component {
         >
         <div className={classes['list-item']}>
           <div className={classes['list-container']} ref="listItem">
-            <div className={classes['control-btn']}>编辑</div>
+            <div className={classes['control-btn']} onClick={this.modify}>编辑</div>
             <div className={classes['list-img']}>
-              <img src={require('../../static/ceshi.jpg')} />
+              <img src={value.images.small || require('../../static/ceshi.jpg')} />
             </div>
             <div className={classes['list-content']}>
-              <p>sdgsagsdggdsdgagsdgsdgdsg</p>
+              <p>{`${value.name} ${value.auth}` || 'sss'}</p>
             </div>
-            <div className={classes['control-btn']}>删除</div>
+            <div className={classes['control-btn']} onClick={this.delete}>删除</div>
           </div>
         </div>
       </FingerTouch>

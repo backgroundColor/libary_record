@@ -31,7 +31,7 @@ class InfoCard extends React.Component {
   }
 
   render () {
-    const {src, name, auth, factory, desc} = this.props.result
+    const {src, name, auth, factory, desc, images} = this.props.result
     const { getFieldDecorator } = this.props.form
     return (
       <div className={classes['info-container']}>
@@ -81,6 +81,17 @@ class InfoCard extends React.Component {
         <div className={classes['desc_container']}>
           {getFieldDecorator('desc', {
             initialValue: desc || ''
+          })(
+            <TextareaItem
+              placeholder="请输入描述"
+              rows={5}
+              clear
+            />
+          )}
+        </div>
+        <div className={classes['desc_container']} style={{display: 'none'}}>
+          {getFieldDecorator('images', {
+            initialValue: JSON.stringify(images) || []
           })(
             <TextareaItem
               placeholder="请输入描述"
