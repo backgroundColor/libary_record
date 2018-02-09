@@ -1,21 +1,39 @@
 import React from 'react'
 import classes from './ListItem.scss'
 import FingerTouch from '../FingerTouch'
+import { connect } from 'react-redux'
+import { changeItemFocus } from '../../redux/modules/List/actions'
+import R from 'ramda'
+const mapActionCreators = { changeItemFocus }
 type Props = {
-  value: Object
+  value: Object,
+  id: String,
+  changeItemFocus: Function,
+  currentItem: String
 }
-export default class ListItem extends React.Component {
+class ListItem extends React.Component {
   props: Props
   constructor (props) {
     super(props)
     this.handleSwipe = this.handleSwipe.bind(this)
     this.handleDoubleTap = this.handleDoubleTap.bind(this)
   }
+
+  componentWillReceiveProps (nextProps) {
+    // 保证多个Item 只能有一个可滑动
+    if (!R.equals(nextProps.currentItem, this.props.currentItem) &&
+    nextProps.currentItem !== this.props.id &&
+    this.props.currentItem !== '') {
+      const targetItem = this.refs['listItem']
+      targetItem.style.transform = 'translateX(-80px)'
+    }
+  }
+
   handleSwipe (e) {
-    // console.log(this)
     if (!this.refs['listItem']) throw new Error('target is not found, must be add id to query')
     const direction = e.direction
     const targetItem = this.refs['listItem']
+    this.props.changeItemFocus(this.props.id)
     if (direction.toLocaleUpperCase() === 'LEFT') {
       console.log('left')
       targetItem.style.transform = 'translateX(-160px)'
@@ -45,15 +63,24 @@ export default class ListItem extends React.Component {
   delete () {
     console.log('delete')
   }
+
+  changeRadio (id) {
+    console.log(id, 'change radio....')
+  }
   render () {
-    const { value } = this.props
+    const { value, id } = this.props
+    // const _this = this
     return (
       <FingerTouch
         onSwipe={this.handleSwipe}
         onDoubleTap={this.handleDoubleTap}
-        key="list-item"
+        key={id}
+        onBlur={this.delete}
         >
-        <div className={classes['list-item']}>
+        <div className={classes['list-item']} htmlFor={id}>
+          {
+            // <input type="radio" name="only" id={id} ref={id} onChange={function () { _this.changeRadio(id) }} />
+          }
           <div className={classes['list-container']} ref="listItem">
             <div className={classes['control-btn']} onClick={this.modify}>编辑</div>
             <div className={classes['list-img']}>
@@ -69,3 +96,5 @@ export default class ListItem extends React.Component {
     )
   }
 }
+
+export default connect(null, mapActionCreators)(ListItem)

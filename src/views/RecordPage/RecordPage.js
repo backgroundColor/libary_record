@@ -7,6 +7,7 @@ import R from 'ramda'
 import InfoCard from 'components/InfoCard'
 import { connect } from 'react-redux'
 import { changeFormState } from '../../redux/modules/Record/action'
+import ListGroup from 'components/ListItem/ListGroup'
 import ListItem from 'components/ListItem'
 const mapActionCreators = { changeFormState }
 const mapStateToProps = (state) => {
@@ -99,14 +100,15 @@ class RecordPage extends React.Component {
   }
   render () {
     const { visible, result, histories } = this.state
-
     return (
       <div className={classes['record-container']}>
         <CameraQutoa getCode={this.getCode} />
         <div className={classes['list-view-container']}>
+          <ListGroup>
           {
-            histories.map((his, item) => <ListItem key={`listItem${item}`} value={his} />)
+            histories.map((his, item) => <ListItem key={`listItem${item}`} id={`listItem${item}`} value={his} />)
           }
+          </ListGroup>
         </div>
         <Modal
           popup
