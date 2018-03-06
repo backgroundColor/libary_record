@@ -3,13 +3,17 @@ import classes from './ListItem.scss'
 import FingerTouch from '../FingerTouch'
 import { connect } from 'react-redux'
 import { changeItemFocus } from '../../redux/modules/List/actions'
+import { Modal } from 'antd-mobile'
 import R from 'ramda'
 const mapActionCreators = { changeItemFocus }
+const alert = Modal.alert
 type Props = {
   value: Object,
   id: String,
   changeItemFocus: Function,
-  currentItem: String
+  currentItem: String,
+  deleteFn: Function,
+  updateFn: Function
 }
 class ListItem extends React.Component {
   props: Props
@@ -17,6 +21,7 @@ class ListItem extends React.Component {
     super(props)
     this.handleSwipe = this.handleSwipe.bind(this)
     this.handleDoubleTap = this.handleDoubleTap.bind(this)
+    this.delete = this.delete.bind(this)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -61,12 +66,18 @@ class ListItem extends React.Component {
   }
 
   delete () {
-    console.log('delete')
+    console.log(this.props.value)
+    const { value, deleteFn } = this.props
+    alert('删除', `确定删除${value.name}`, [
+      {text: '取消', onPress: () => console.log(value.id), style: 'default'},
+      {text: '确定', onPress: () => deleteFn(value.id), style: 'default'}
+    ])
   }
 
   changeRadio (id) {
     console.log(id, 'change radio....')
   }
+
   render () {
     const { value, id } = this.props
     // const _this = this
@@ -78,16 +89,13 @@ class ListItem extends React.Component {
         onBlur={this.delete}
         >
         <div className={classes['list-item']} htmlFor={id}>
-          {
-            // <input type="radio" name="only" id={id} ref={id} onChange={function () { _this.changeRadio(id) }} />
-          }
           <div className={classes['list-container']} ref="listItem">
             <div className={classes['control-btn']} onClick={this.modify}>编辑</div>
             <div className={classes['list-img']}>
               <img src={value.images.small || require('../../static/ceshi.jpg')} />
             </div>
             <div className={classes['list-content']}>
-              <p>{`${value.name} ${value.auth}` || 'sss'}</p>
+              <p>{`${value.name} ${value.auth}` || '---'}</p>
             </div>
             <div className={classes['control-btn']} onClick={this.delete}>删除</div>
           </div>

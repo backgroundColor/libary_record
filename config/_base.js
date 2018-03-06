@@ -15,7 +15,7 @@ const config = {
   dir_dist   : 'dist',
   dir_server : 'server',
   dir_test   : 'tests',
-  host_url   : '',
+  host_url   : 'http://192.168.1.99:3003/',
   isbn_url : 'https://api.douban.com/v2/book/isbn/',
   // ----------------------------------
   // Server Configuration

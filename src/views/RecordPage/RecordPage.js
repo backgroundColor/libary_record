@@ -1,6 +1,6 @@
 import React from 'react'
 import CameraQutoa from 'components/CameraQutoa'
-import { getBookInfo } from '../../api/getData'
+import { getBookInfo, saveBook, deleteBook } from '../../api/getData'
 import { Toast, Modal, Button } from 'antd-mobile'
 import classes from './RecordPage.scss'
 import R from 'ramda'
@@ -37,6 +37,7 @@ class RecordPage extends React.Component {
     this.onClose = this.onClose.bind(this)
     this.addRecord = this.addRecord.bind(this)
     this.submitData = this.submitData.bind(this)
+    this.deleteBookFn = this.deleteBookFn.bind(this)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -90,14 +91,48 @@ class RecordPage extends React.Component {
   }
 
   submitData (val) {
-    console.log(val)
-
-    this.props.changeFormState(false)
-    this.setState({
-      visible: false,
-      histories: this.state.histories.concat(val)
+    Toast.loading('Loading')
+    saveBook(val)
+    .then(json => {
+      if (json.code !== 0) throw new Error(json.message)
+      this.props.changeFormState(false)
+      this.setState({
+        visible: false,
+        histories: this.state.histories.concat(json.body)
+      })
+      Toast.hide()
+    })
+    .catch(err => {
+      console.error(err)
+      Toast.hide()
+      this.props.changeFormState(false)
+      Toast.info(err.message, 1)
     })
   }
+
+  deleteBookFn (id) {
+    if (!id) throw new Error('book id is empty')
+    Toast.loading('Loading')
+    deleteBook(id)
+    .then(json => {
+      if (json.code !== 0) throw new Error(json.message)
+      const filterFn = n => n.id !== id
+      Toast.hide()
+      this.setState({
+        histories: R.filter(filterFn, this.state.histories)
+      })
+    })
+    .catch(err => {
+      console.error(err)
+      Toast.hide()
+      Toast.info(err.message, 1)
+    })
+  }
+
+  updateBook (id) {
+    console.log(id)
+  }
+
   render () {
     const { visible, result, histories } = this.state
     return (
@@ -106,7 +141,8 @@ class RecordPage extends React.Component {
         <div className={classes['list-view-container']}>
           <ListGroup>
           {
-            histories.map((his, item) => <ListItem key={`listItem${item}`} id={`listItem${item}`} value={his} />)
+            histories.map((his, item) => <ListItem key={`listItem${item}`}
+              id={`listItem${item}`} value={his} deleteFn={this.deleteBookFn} updateFn={this.updateBook} />)
           }
           </ListGroup>
         </div>
