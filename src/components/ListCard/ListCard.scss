@@ -1,0 +1,39 @@
+.card {
+  padding: 5px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  margin-bottom: 5px;
+  .header {
+    padding: 5px 20px 5px 0;
+    border-bottom: 1px solid #ccc;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #484848;
+  }
+  .body {
+    padding: 5px 0;
+    display: flex;
+    img {
+      height: 64px;
+      width: 64px;
+      margin-right: 10px;
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      .item {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  footer {
+    text-align: right;
+    padding-right: 10px;
+  }
+}

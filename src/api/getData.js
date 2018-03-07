@@ -3,6 +3,13 @@ export const getBookInfo = (id) => {
   return fetch(`${__ISBN_URL__}${id}`)
   .then(res => res.json())
 }
+
+// 获取图书
+export const getBookList = () => {
+  const url = `${__HOST_URL__}books/bookslist`
+  return fetch(url)
+  .then(res => res.json())
+}
 // 保存图书
 export const saveBook = (data) => {
   const url = `${__HOST_URL__}books/savebook`

@@ -63,7 +63,6 @@ class RecordPage extends React.Component {
     Toast.loading('Loading')
     getBookInfo(code)
     .then(res => {
-      console.log(res)
       this.setState({
         result: {
           src: res.images.medium,

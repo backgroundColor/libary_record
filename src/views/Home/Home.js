@@ -9,6 +9,9 @@ export default class Home extends React.Component {
         <Button type="ghost">
           <Link to="/record">record</Link>
         </Button>
+        <Button type="ghost">
+          <Link to="/list">list</Link>
+        </Button>
       </div>
     )
   }
