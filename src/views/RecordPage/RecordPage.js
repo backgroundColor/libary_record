@@ -1,6 +1,6 @@
 import React from 'react'
 import CameraQutoa from 'components/CameraQutoa'
-import { getBookInfo, saveBook, deleteBook } from '../../api/getData'
+import { getBookInfo, saveBook, deleteBook, updateBook } from '../../api/getData'
 import { Toast, Modal, Button } from 'antd-mobile'
 import classes from './RecordPage.scss'
 import R from 'ramda'
@@ -11,8 +11,8 @@ import ListGroup from 'components/ListItem/ListGroup'
 import ListItem from 'components/ListItem'
 const mapActionCreators = { changeFormState }
 const mapStateToProps = (state) => {
-  const { formdata } = state.recordReducer
-  return { formdata }
+  const { formdata, currentState } = state.recordReducer
+  return { formdata, currentState }
 }
 type Props = {
   changeFormState: Function,
@@ -38,11 +38,14 @@ class RecordPage extends React.Component {
     this.addRecord = this.addRecord.bind(this)
     this.submitData = this.submitData.bind(this)
     this.deleteBookFn = this.deleteBookFn.bind(this)
+    this.modifyBook = this.modifyBook.bind(this)
+    this.saveBookFn = this.saveBookFn.bind(this)
+    this.updateBookFn = this.updateBookFn.bind(this)
   }
 
   componentWillReceiveProps (nextProps) {
-    if (!R.equals(nextProps.formdata, this.props.formdata) && !R.isEmpty(nextProps.formdata)) {
-      console.log('formdata: ', JSON.stringify(nextProps.formdata, null, 4))
+    if (nextProps.currentState && !R.isEmpty(nextProps.formdata)) {
+      // console.log('formdata: ', JSON.stringify(nextProps.formdata, null, 4))
       const res = Object.keys(nextProps.formdata).reduce((res, curr) => {
         if (curr !== 'images') {
           res[curr] = nextProps.formdata[curr]
@@ -84,6 +87,7 @@ class RecordPage extends React.Component {
     this.setState({
       visible: false
     })
+    this.props.changeFormState(false)
   }
 
   addRecord () {
@@ -92,6 +96,17 @@ class RecordPage extends React.Component {
 
   submitData (val) {
     Toast.loading('Loading')
+    // debugger
+    if (!val.id) {
+      this.saveBookFn(val)
+    } else {
+      this.updateBookFn(val)
+    }
+  }
+
+  // 保存图书
+  saveBookFn (val) {
+    if (!val) throw new Error('图书信息为空')
     saveBook(val)
     .then(json => {
       if (json.code !== 0) throw new Error(json.message)
@@ -109,7 +124,7 @@ class RecordPage extends React.Component {
       Toast.info(err.message, 1)
     })
   }
-
+  // 删除图书
   deleteBookFn (id) {
     if (!id) throw new Error('book id is empty')
     Toast.loading('Loading')
@@ -129,8 +144,41 @@ class RecordPage extends React.Component {
     })
   }
 
-  updateBook (id) {
-    console.log(id)
+  // 修改图书
+  updateBookFn (val) {
+    if (!val || !val.id) throw new Error('图书信息为空')
+    updateBook(val)
+    .then(json => {
+      if (json.code !== 0) throw new Error(json.message)
+      this.props.changeFormState(false)
+      this.setState({
+        visible: false,
+        histories: R.update(R.findIndex(R.propEq('id', val.id))(this.state.histories), val, this.state.histories)
+      })
+      Toast.hide()
+    })
+    .catch(err => {
+      console.error(err)
+      Toast.hide()
+      this.props.changeFormState(false)
+      Toast.info(err.message, 1)
+    })
+  }
+
+  // 编辑图书按钮 弹窗
+  modifyBook (value) {
+    this.setState({
+      visible: true,
+      result: {
+        id: value.id,
+        src: value.images.medium,
+        name: value.name,
+        auth: value.auth,
+        factory: value.factory,
+        desc: value.desc,
+        images: value.images
+      }
+    })
   }
 
   render () {
@@ -142,7 +190,7 @@ class RecordPage extends React.Component {
           <ListGroup>
           {
             histories.map((his, item) => <ListItem key={`listItem${item}`}
-              id={`listItem${item}`} value={his} deleteFn={this.deleteBookFn} updateFn={this.updateBook} />)
+              id={`listItem${item}`} value={his} deleteFn={this.deleteBookFn} updateFn={this.modifyBook} />)
           }
           </ListGroup>
         </div>

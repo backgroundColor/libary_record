@@ -23,15 +23,16 @@ class InfoCard extends React.Component {
     if (!R.equals(nextProps.currentState, this.props.currentState) && nextProps.currentState) {
       this.props.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
-          this.props.getFormData(values)
+          const sumitData = values.id ? values : R.omit(['id'], values)
+          console.log('Received values of form: ', sumitData)
+          this.props.getFormData(sumitData)
         }
       })
     }
   }
 
   render () {
-    const {src, name, auth, factory, desc, images} = this.props.result
+    const {src, name, auth, factory, desc, images, id} = this.props.result
     const { getFieldDecorator } = this.props.form
     return (
       <div className={classes['info-container']}>
@@ -41,6 +42,13 @@ class InfoCard extends React.Component {
           </div>
           <div className={classes['msg-container']}>
             <ul>
+              <li>
+                {getFieldDecorator('id', {
+                  initialValue: id || ''
+                })(
+                  <input type="hidden" />
+                )}
+              </li>
               <li>
                 {getFieldDecorator('name', {
                   rules: [{ required: true, message: '请输入书名' }],

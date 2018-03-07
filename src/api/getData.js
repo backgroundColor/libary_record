@@ -31,3 +31,17 @@ export const deleteBook = (id) => {
   })
   .then(res => res.json())
 }
+
+// 修改图书
+
+export const updateBook = (val) => {
+  const url = `${__HOST_URL__}books/updatebook`
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(val)
+  })
+  .then(res => res.json())
+}

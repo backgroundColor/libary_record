@@ -22,6 +22,7 @@ class ListItem extends React.Component {
     this.handleSwipe = this.handleSwipe.bind(this)
     this.handleDoubleTap = this.handleDoubleTap.bind(this)
     this.delete = this.delete.bind(this)
+    this.modify = this.modify.bind(this)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -56,21 +57,29 @@ class ListItem extends React.Component {
   }
 
   handleDoubleTap (e) {
-    // console.log(this)
     const targetItem = this.refs['listItem']
     targetItem.style.transform = 'translateX(-80px)'
   }
 
-  modify () {
+  modify (e) {
     console.log('modify')
+    const { value } = this.props
+    this.props.updateFn(value)
+    this.handleDoubleTap(e)
   }
 
   delete () {
-    console.log(this.props.value)
     const { value, deleteFn } = this.props
     alert('删除', `确定删除${value.name}`, [
-      {text: '取消', onPress: () => console.log(value.id), style: 'default'},
-      {text: '确定', onPress: () => deleteFn(value.id), style: 'default'}
+      {text: '取消', onPress: () => {
+        const targetItem = this.refs['listItem']
+        targetItem.style.transform = 'translateX(-80px)'
+      }, style: 'default'},
+      {text: '确定', onPress: () => {
+        deleteFn(value.id)
+        const targetItem = this.refs['listItem']
+        targetItem.style.transform = 'translateX(-80px)'
+      }, style: 'default'}
     ])
   }
 
