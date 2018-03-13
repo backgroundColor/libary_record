@@ -29,6 +29,7 @@ class ListPage extends React.Component {
       height: 0,
       page: 1,
       pageSize: 5,
+      searchParam: '',
       pullState: true,
       bottomText: '上拉加载',
       scrollStatus: false
@@ -166,14 +167,21 @@ class ListPage extends React.Component {
   }
 
   pageLoad () {
-    const { pageSize, page, pullState } = this.state
+    const { pageSize, page, pullState, searchParam } = this.state
     if (!pullState) {
       this.setState({ bottomText: '已经到底' })
       return
     }
     const currentPage = page + 1
     this.setState({ refreshing: true })
-    getBookList({pageSize, page: currentPage})
+    const query = (() => {
+      if (searchParam) {
+        return {pageSize, page: currentPage, name: searchParam}
+      } else {
+        return {pageSize, page: currentPage}
+      }
+    })()
+    getBookList(query)
     .then(json => {
       if (json.code !== 0) throw new Error(json.message)
       this.setState((preState) => {
@@ -229,7 +237,6 @@ class ListPage extends React.Component {
       clearTimeout(scrollTimeOut)
       scrollTimeOut = setTimeout(() => {
         const distance = ReactDOM.findDOMNode(this.ptr).scrollTop
-        // console.log(distance)
         if (distance > 300) {
           this.setState({ scrollStatus: true })
         } else {
@@ -246,12 +253,11 @@ class ListPage extends React.Component {
 
   searchFn (val) {
     if (val) {
-      this.setState({ lists: [] })
+      this.setState({ lists: [], searchParam: val })
       this.getBooks({name: val})
       return
     }
-    const { pageSize = 10, page = 1 } = this.state
-    this.getBooks({pageSize, page})
+    this.getBooks({pageSize: 10, page: 1})
   }
   render () {
     const { lists, visible, result, refreshing, height, bottomText, scrollStatus } = this.state
@@ -272,7 +278,7 @@ class ListPage extends React.Component {
         >
           <div className={classes['container']}>
             <div>
-              <SearchBar placeholder="搜索书名/ISBN" maxLength={8} onSubmit={this.searchFn} />
+              <SearchBar placeholder="搜索书名" maxLength={8} onSubmit={this.searchFn} />
             </div>
             <div className={classes['card-content']}>
               {
