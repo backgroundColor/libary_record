@@ -5,8 +5,9 @@ export const getBookInfo = (id) => {
 }
 
 // 获取图书
-export const getBookList = () => {
-  const url = `${__HOST_URL__}books/bookslist`
+export const getBookList = (params) => {
+  const query = params ? Object.keys(params).map(key => `${key}=${params[key]}`).join('&') : ''
+  const url = `${__HOST_URL__}books/bookslist?${query}`
   return fetch(url)
   .then(res => res.json())
 }

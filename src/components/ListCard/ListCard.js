@@ -5,7 +5,10 @@ const alert = Modal.alert
 type Props = {
   value: Object,
   deleteFn: Function,
-  editFn: Function
+  editFn: Function,
+  disabled: Boolean,
+  keepFn: Function,
+  reserveFn: Function
 }
 export default class ListCard extends React.Component {
   props: Props
@@ -13,6 +16,8 @@ export default class ListCard extends React.Component {
     super(props)
     this.edit = this.edit.bind(this)
     this.deleteFn = this.deleteFn.bind(this)
+    this.keep = this.keep.bind(this)
+    this.reserve = this.reserve.bind(this)
   }
 
   edit () {
@@ -28,10 +33,18 @@ export default class ListCard extends React.Component {
       {text: '确定', onPress: () => { deleteFn(value.id) }, style: 'default'}
     ])
   }
+
+  keep () {
+    this.props.keepFn(this.props.value)
+  }
+
+  reserve () {
+    this.props.reserveFn(this.props.value)
+  }
   render () {
-    const { value } = this.props
+    const { value, disabled } = this.props
     return (
-      <div className={classes['card']}>
+      <div className={classes['card']} style={{ backgroundColor: disabled ? '#f5f5f5' : '#fff' }}>
         <header className={classes['header']}><h4>{value.name || '-----'}</h4></header>
         <article className={classes['body']}>
           <img src={value.images && value.images.small ? value.images.small : ''} />
@@ -41,8 +54,21 @@ export default class ListCard extends React.Component {
           </div>
         </article>
         <footer>
-          <span onClick={this.edit}><img src={require('../../static/edit.svg')} /></span>&emsp;
-          <span onClick={this.deleteFn}><img src={require('../../static/delete.svg')} /></span>
+          <span style={{ display: disabled ? 'block' : 'none', float: 'left', lineHeight: '25px', color: '#7d7d7d' }}>
+            {disabled ? `${value.keeper} 已借阅` : ''}
+          </span>
+          <button disabled={disabled} onClick={this.keep}>
+            <img src={require('../../static/control.svg')} />
+          </button>&emsp;
+          <button disabled={disabled} onClick={this.edit}><img src={require('../../static/edit.svg')} /></button>&emsp;
+          <button disabled={disabled} onClick={this.deleteFn}>
+            <img src={require('../../static/delete.svg')} />
+          </button>&emsp;
+          {
+            // <button disabled={disabled} onClick={this.reserve}>
+            //   <img src={require('../../static/reserve.svg')} />
+            // </button>
+          }
         </footer>
       </div>
     )

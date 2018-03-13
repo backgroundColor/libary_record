@@ -1,5 +1,6 @@
 import React from 'react'
-import { SearchBar, Toast, Modal, Button } from 'antd-mobile'
+import ReactDOM from 'react-dom'
+import { SearchBar, Toast, Modal, Button, PullToRefresh } from 'antd-mobile'
 import classes from './ListPage.scss'
 import ListCard from '../../components/ListCard'
 import InfoCard from '../../components/InfoCard'
@@ -12,6 +13,7 @@ const mapStateToProps = (state) => {
   const { formdata, currentState } = state.recordReducer
   return { formdata, currentState }
 }
+const prompt = Modal.prompt
 type Props = {
   changeFormState: Function
 }
@@ -22,7 +24,14 @@ class ListPage extends React.Component {
     this.state = {
       lists: [],
       visible: false,
-      result: {}
+      result: {},
+      refreshing: false,
+      height: 0,
+      page: 1,
+      pageSize: 5,
+      pullState: true,
+      bottomText: '上拉加载',
+      scrollStatus: false
     }
     this.getBooks = this.getBooks.bind(this)
     this.deleteBookFn = this.deleteBookFn.bind(this)
@@ -30,9 +39,23 @@ class ListPage extends React.Component {
     this.onClose = this.onClose.bind(this)
     this.updateRecord = this.updateRecord.bind(this)
     this.submitData = this.submitData.bind(this)
+    this.pageLoad = this.pageLoad.bind(this)
+    this.keepBookFn = this.keepBookFn.bind(this)
+    this.keepBook = this.keepBook.bind(this)
+    this.scrollFn = this.scrollFn.bind(this)
+    this.scrollTop = this.scrollTop.bind(this)
+    this.searchFn = this.searchFn.bind(this)
   }
   componentDidMount () {
-    this.getBooks()
+    const { pageSize = 10, page = 1 } = this.state
+    this.getBooks({pageSize, page})
+    setTimeout(() => {
+      this.setState({
+        height: document.getElementById('coreLayout').clientHeight - 65
+      })
+    }, 0)
+
+    this.scrollFn()
   }
 
   componentWillReceiveProps (nextProps) {
@@ -49,13 +72,32 @@ class ListPage extends React.Component {
     }
   }
 
-  getBooks () {
+  getBooks (params) {
     Toast.loading('Loading')
-    getBookList()
+    getBookList(params)
     .then(json => {
       if (json.code !== 0) throw new Error(json.message)
-      this.setState({
-        lists: json.body
+      this.setState((preState) => {
+        const { lists } = preState
+        const ids = lists.map(item => item.id)
+        const newData = json.body
+        if (lists.length === 0) {
+          return { lists: json.body }
+        } else if (newData.length !== 0) {
+          let cloneList = R.clone(lists)
+          newData.map(item => item.id).map(id => {
+            if (ids.indexOf(id) > -1) {
+              cloneList = R.update(R.findIndex(R.propEq('id', id), lists),
+              newData[R.findIndex(R.propEq('id', id), newData)], cloneList)
+            } else {
+              cloneList.push(newData[R.findIndex(R.propEq('id', id), newData)])
+            }
+          })
+          console.log(cloneList)
+          return {
+            lists: cloneList
+          }
+        }
       })
       Toast.hide()
     })
@@ -72,7 +114,7 @@ class ListPage extends React.Component {
     .then(json => {
       if (json.code !== 0) throw new Error(json.message)
       Toast.hide()
-      this.getBooks()
+      this.getBooks({pageSize: this.state.pageSize, page: this.state.page})
     })
     .catch(err => {
       console.error(err)
@@ -106,7 +148,6 @@ class ListPage extends React.Component {
   }
 
   submitData (val) {
-    // console.log(val)
     Toast.loading('Loading')
     updateBook(val)
     .then(json => {
@@ -114,7 +155,7 @@ class ListPage extends React.Component {
       Toast.hide()
       this.setState({ visible: false })
       this.props.changeFormState(false)
-      this.getBooks()
+      this.getBooks({pageSize: this.state.pageSize, page: this.state.page})
     })
     .catch(err => {
       console.error(err)
@@ -123,36 +164,149 @@ class ListPage extends React.Component {
       Toast.info(err.message, 1)
     })
   }
-  render () {
-    const { lists, visible, result } = this.state
-    return (
-      <div className={classes['container']}>
-        <div>
-          <SearchBar placeholder="Search" maxLength={8} />
-        </div>
-        <div className={classes['card-content']}>
-        {
-          lists.map((item, index) => <ListCard value={item} key={`list${index}`}
-            editFn={this.editBookFn}
-            deleteFn={this.deleteBookFn} />)
+
+  pageLoad () {
+    const { pageSize, page, pullState } = this.state
+    if (!pullState) {
+      this.setState({ bottomText: '已经到底' })
+      return
+    }
+    const currentPage = page + 1
+    this.setState({ refreshing: true })
+    getBookList({pageSize, page: currentPage})
+    .then(json => {
+      if (json.code !== 0) throw new Error(json.message)
+      this.setState((preState) => {
+        return {
+          refreshing: false,
+          page: currentPage,
+          lists: preState.lists.concat(json.body),
+          pullState: json.body.length === 0
         }
-        </div>
-        <Modal
-          popup
-          visible={visible}
-          onClose={this.onClose}
-          animationType="slide-up"
+      })
+    })
+    .catch(err => {
+      console.error(err)
+      this.setState({ refreshing: false })
+      Toast.info(err.message, 1)
+    })
+    // setTimeout(() => {
+    //   this.setState({ refreshing: false })
+    // }, 1000)
+  }
+
+  keepBookFn (val) {
+    if (!val) throw new Error('id is empty!')
+    prompt(`借阅《${val.name}》`, '请输入借阅者名字', [
+      {
+        text: '取消',
+        onPress: () => {}
+      },
+      {
+        text: '确定',
+        onPress: value => new Promise((resolve, reject) => {
+          const regEx = /^([\u4e00-\u9fa5\·]{2,4})$/
+          if (!value || !regEx.test(value)) {
+            Toast.info('请正确输入借阅者姓名！')
+            reject()
+            return
+          }
+          this.keepBook(val.id, value)
+          resolve()
+        })
+      }
+    ], 'default', null, ['请输入借阅者名字'])
+  }
+
+  keepBook (id, value) {
+    if (!id || !value) throw new Error('id, value must be input!')
+    this.submitData({id, keeper: value, status: 1})
+  }
+
+  scrollFn () {
+    let scrollTimeOut
+    ReactDOM.findDOMNode(this.ptr).addEventListener('scroll', (e) => {
+      clearTimeout(scrollTimeOut)
+      scrollTimeOut = setTimeout(() => {
+        const distance = ReactDOM.findDOMNode(this.ptr).scrollTop
+        // console.log(distance)
+        if (distance > 300) {
+          this.setState({ scrollStatus: true })
+        } else {
+          this.setState({ scrollStatus: false })
+        }
+      }, 80)
+    }, false)
+    clearTimeout(scrollTimeOut)
+  }
+
+  scrollTop () {
+    ReactDOM.findDOMNode(this.ptr).scrollTop = 0
+  }
+
+  searchFn (val) {
+    if (val) {
+      this.setState({ lists: [] })
+      this.getBooks({name: val})
+      return
+    }
+    const { pageSize = 10, page = 1 } = this.state
+    this.getBooks({pageSize, page})
+  }
+  render () {
+    const { lists, visible, result, refreshing, height, bottomText, scrollStatus } = this.state
+    const that = this
+    return (
+      <div>
+        <PullToRefresh
+          ref={function (el) { that.ptr = el }}
+          indicator={bottomText}
+          direction='up'
+          refreshing={refreshing}
+          onRefresh={this.pageLoad}
+          distanceToRefresh={50}
+          style={{
+            height,
+            overflow: 'auto'
+          }}
         >
-          <div>
-            <InfoCard result={result} />
-            <div className={classes['btn-item']}>
-              <Button type="warning" onClick={this.onClose}>取消</Button>
+          <div className={classes['container']}>
+            <div>
+              <SearchBar placeholder="搜索书名/ISBN" maxLength={8} onSubmit={this.searchFn} />
             </div>
-            <div className={classes['btn-item']}>
-              <Button type="primary" onClick={this.updateRecord}>确定</Button>
+            <div className={classes['card-content']}>
+              {
+                lists.map((item, index) => <ListCard value={item} key={`list${index}`}
+                  disabled={item.status === 1}
+                  editFn={this.editBookFn}
+                  keepFn={this.keepBookFn}
+                  deleteFn={this.deleteBookFn} />)
+              }
             </div>
+            <Modal
+              popup
+              visible={visible}
+              onClose={this.onClose}
+              animationType="slide-up"
+            >
+              <div>
+                <InfoCard result={result} />
+                <div className={classes['btn-item']}>
+                  <Button type="warning" onClick={this.onClose}>取消</Button>
+                </div>
+                <div className={classes['btn-item']}>
+                  <Button type="primary" onClick={this.updateRecord}>确定</Button>
+                </div>
+              </div>
+            </Modal>
           </div>
-        </Modal>
+        </PullToRefresh>
+        <div className={classes['topBtn']}
+          style={{display: scrollStatus ? 'block' : 'none'}}
+          onClick={this.scrollTop}
+          >
+          <img src={require('static/top.svg')} />
+        </div>
       </div>
     )
   }

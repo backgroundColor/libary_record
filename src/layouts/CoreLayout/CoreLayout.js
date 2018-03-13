@@ -4,8 +4,8 @@ import '../../styles/core.scss'
 import classes from './CoreLayout.scss'
 function CoreLayout ({ children }) {
   return (
-    <div className={classes['container']}>
-      <HeaderNav />
+    <div className={classes['container']} id="coreLayout">
+      <div className={classes['header-nav']}><HeaderNav /></div>
       <div className={classes['view-container']}>
         {children}
       </div>
