@@ -1,0 +1,47 @@
+.container {
+  header {
+    height: 300px;
+    width: calc(100% + 20px);
+    margin-left: -10px;
+    margin-top: -10px;
+    position: relative;
+    .trape {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      transform: skewY(-10deg);
+      transform-origin: top left;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, .16);
+      background-color: #3c55cc;
+      z-index: 1;
+    }
+  }
+
+  article {
+    padding: 20px;
+    ul, li {
+      list-style: none;
+    }
+    li {
+      text-align: center;
+      margin-bottom: 10px;
+      .myInput {
+        background: transparent;
+        border-bottom: 1px solid #3c55cc;
+        input {
+          color: #3c55cc;
+          &::placeholder {
+            color: #3c55cc;
+          }
+        }
+      }
+
+      .loginBtn {
+        background-color: #3c55cc;
+        color: #fff;
+      }
+    }
+  }
+}

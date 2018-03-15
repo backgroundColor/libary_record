@@ -11,12 +11,14 @@ import CoreLayout from 'layouts/CoreLayout/CoreLayout'
 import Home from 'views/Home'
 import RecordPage from 'views/RecordPage'
 import ListPage from 'views/ListPage'
+import LoginPage from 'views/LoginPage'
 export default (store) => (
   <Router>
     <Route path='/' component={CoreLayout}>
       <IndexRoute component={Home} />
       <Route path='record' component={RecordPage} />
       <Route path='list' component={ListPage} />
+      <Route path='login' component={LoginPage} />
     </Route>
   </Router>
 )
