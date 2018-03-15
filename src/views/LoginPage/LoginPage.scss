@@ -1,6 +1,6 @@
 .container {
   header {
-    height: 300px;
+    height: 400px;
     width: calc(100% + 20px);
     margin-left: -10px;
     margin-top: -10px;
@@ -20,7 +20,7 @@
   }
 
   article {
-    padding: 20px;
+    padding: 10px 20px;
     ul, li {
       list-style: none;
     }

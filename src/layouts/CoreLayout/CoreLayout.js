@@ -18,7 +18,9 @@ class CoreLayout extends React.Component {
         }}>
           <HeaderNav />
         </div>
-        <div className={classes['view-container']}>
+        <div className={classes['view-container']} style={{
+          height: location.pathname === '/login' ? '100%' : 'calc(100% - 45px)'
+        }}>
           {children}
         </div>
       </div>
