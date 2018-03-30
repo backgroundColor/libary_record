@@ -79,6 +79,7 @@ class RecordPage extends React.Component {
     .catch(err => {
       console.error(err)
       Toast.hide()
+      Toast.info(err.message, 1)
     })
   }
 
