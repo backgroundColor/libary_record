@@ -2,6 +2,7 @@ import React from 'react'
 import classes from './LoginPage.scss'
 import { InputItem, Button, Toast } from 'antd-mobile'
 import { createForm } from 'rc-form'
+import { Link } from 'react-router'
 import LoginSvg from '../../components/LoginSvg'
 import { login } from '../../api/getData'
 import { push } from 'react-router-redux'
@@ -43,12 +44,14 @@ class LoginPage extends React.Component {
       if (json.code !== 0) {
         throw new Error(json.message)
       }
-      Toast.loading('Loading')
+      Toast.hide()
       this.props.storeUserMess(json.body)
+      localStorage.setItem('userInfo', JSON.stringify(json.body))
       this.props.push('/')
     })
     .catch(err => {
       console.error(err)
+      Toast.hide()
       Toast.info(err.message, 1)
     })
   }
@@ -92,10 +95,12 @@ class LoginPage extends React.Component {
             <li>
               <Button className={classes['loginBtn']} onClick={this.handleSubmit}>Sign in</Button>
             </li>
-            <li>注册账号</li>
+            <li><Link to='register'>注册账号</Link></li>
           </ul>
         </article>
-        <footer>footer</footer>
+        <footer>
+          @created by Dong
+        </footer>
       </div>
     )
   }

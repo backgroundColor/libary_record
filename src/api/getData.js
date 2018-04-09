@@ -68,3 +68,39 @@ export const login = (val) => {
   })
   .then(res => res.data)
 }
+
+// 退出
+export const singout = () => {
+  const url = `${__HOST_URL__}admin/singout`
+  return axios(url)
+  .then(res => res.data)
+}
+
+// 获取验证码
+export const getVerifiCode = (email) => {
+  const url = `${__HOST_URL__}admin/sendmail`
+  return axios(url, {
+    method: 'POST',
+    data: { email }
+  })
+  .then(res => res.data)
+}
+// 注册用户
+export const register = (val) => {
+  const url = `${__HOST_URL__}admin/register`
+  return axios(url, {
+    method: 'POST',
+    data: val
+  })
+  .then(res => res.data)
+}
+
+// 验证验证码是否正确
+export const verifiCode = (code) => {
+  const url = `${__HOST_URL__}admin/verificode`
+  return axios(url, {
+    method: 'POST',
+    data: { code }
+  })
+  .then(res => res.data)
+}

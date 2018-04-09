@@ -14,12 +14,14 @@ class CoreLayout extends React.Component {
     return (
       <div className={classes['container']} id="coreLayout">
         <div className={classes['header-nav']} style={{
-          display: location.pathname === '/login' ? 'none' : 'block'
+          display: location.pathname.indexOf('login') > -1 || location.pathname.indexOf('register') > -1
+          ? 'none' : 'block'
         }}>
           <HeaderNav />
         </div>
         <div className={classes['view-container']} style={{
-          height: location.pathname === '/login' ? '100%' : 'calc(100% - 45px)'
+          height: location.pathname.indexOf('login') > -1 || location.pathname.indexOf('register') > -1
+          ? '100%' : 'calc(100% - 45px)'
         }}>
           {children}
         </div>
