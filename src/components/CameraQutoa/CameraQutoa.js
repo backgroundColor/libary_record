@@ -84,5 +84,3 @@ export default class CameraQutoa extends React.Component {
     )
   }
 }
-
-// <input type="file" onChange={this.selectImg} />

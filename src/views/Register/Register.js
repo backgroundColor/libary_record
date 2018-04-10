@@ -155,6 +155,7 @@ class Register extends React.Component {
 
   // run time
   runTime () {
+    time = 60
     this.setState({
       disabled: true,
       btnText: '重新获取'

@@ -2,10 +2,9 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 // 通过豆瓣api获取图书信息
 export const getBookInfo = (id) => {
-  return fetch(`${__ISBN_URL__}${id}`, {
-    credentials: 'include'
-  })
-  .then(res => res.json())
+  const url = `${__HOST_URL__}v2/book/isbn/${id}`
+  return axios(url)
+  .then(res => res.data)
 }
 
 // 获取图书

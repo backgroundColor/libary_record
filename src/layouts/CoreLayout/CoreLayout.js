@@ -17,7 +17,7 @@ class CoreLayout extends React.Component {
           display: location.pathname.indexOf('login') > -1 || location.pathname.indexOf('register') > -1
           ? 'none' : 'block'
         }}>
-          <HeaderNav />
+          <HeaderNav {...this.props} />
         </div>
         <div className={classes['view-container']} style={{
           height: location.pathname.indexOf('login') > -1 || location.pathname.indexOf('register') > -1
