@@ -24,9 +24,11 @@ class HeaderNav extends React.Component {
   changeTitle (path) {
     let title
     if (path.indexOf('record') > -1) {
-      title = '录入'
+      title = '录入书籍'
     } else if (path.indexOf('list') > -1) {
-      title = '列表'
+      title = '查看列表'
+    } else if (path.indexOf('users') > -1) {
+      title = '用户列表'
     } else {
       title = ''
     }
@@ -38,7 +40,7 @@ class HeaderNav extends React.Component {
     const userEl = (
       <img className={classes['user-img']}
         key='1'
-        src={require('../../static/defaultUser.svg')}
+        src={require('../../static/superman.svg')}
          />
     )
 

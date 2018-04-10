@@ -61,6 +61,13 @@ class Home extends React.Component {
           >
             查看列表
           </Item>
+          <Item
+            thumb={require('static/users.svg')}
+            onClick={function () { _this.props.push('/users') }}
+            arrow="horizontal"
+          >
+            用户列表
+          </Item>
         </List>
         <WhiteSpace />
         <WhiteSpace />

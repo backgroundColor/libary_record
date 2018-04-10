@@ -14,12 +14,14 @@ import ListPage from 'views/ListPage'
 import LoginPage from 'views/LoginPage'
 import requireAuth from '../components/AuthCheck'
 import Register from '../views/Register'
+import UsersPage from '../views/UsersPage'
 export default (store) => (
   <Router>
     <Route path='/' component={CoreLayout}>
       <IndexRoute component={requireAuth(Home)} />
       <Route path='record' component={requireAuth(RecordPage)} />
       <Route path='list' component={requireAuth(ListPage)} />
+      <Route path='users' component={requireAuth(UsersPage)} />
       <Route path='login' component={LoginPage} />
       <Route path='register' component={Register} />
     </Route>
