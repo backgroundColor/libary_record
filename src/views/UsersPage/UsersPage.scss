@@ -1,0 +1,15 @@
+.users-container {
+  height: 100%;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  .topBtn {
+    position: fixed;
+    bottom: 50px;
+    right: 30px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #f3f3f3;
+    background: rgba(199, 233, 255, .7);
+  }
+}

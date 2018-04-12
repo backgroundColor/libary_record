@@ -103,3 +103,37 @@ export const verifiCode = (code) => {
   })
   .then(res => res.data)
 }
+
+// 获取所有用户
+export const getAllUsers = (params) => {
+  const query = params ? Object.keys(params).map(key => `${key}=${params[key]}`).join('&') : ''
+  const url = `${__HOST_URL__}admin/allusers?${query}`
+  return axios(url)
+  .then(res => res.data)
+}
+
+// 锁定或解锁用户
+export const lockOrUnlockUser = (val) => {
+  const url = `${__HOST_URL__}admin/lockuser`
+  return axios(url, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    data: val
+  })
+  .then(res => res.data)
+}
+
+// 删除用户
+export const deleteUser = (val) => {
+  const url = `${__HOST_URL__}admin/deleteuser`
+  return axios(url, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    data: val
+  })
+  .then(res => res.data)
+}

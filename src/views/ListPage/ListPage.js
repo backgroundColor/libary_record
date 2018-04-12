@@ -73,7 +73,7 @@ class ListPage extends React.Component {
     }
   }
 
-  getBooks (params) {
+  getBooks (params, id) {
     Toast.loading('Loading')
     getBookList(params)
     .then(json => {
@@ -85,7 +85,7 @@ class ListPage extends React.Component {
         if (lists.length === 0) {
           return { lists: json.body }
         } else if (newData.length !== 0) {
-          let cloneList = R.clone(lists)
+          let cloneList = R.filter(x => x.id !== id, R.clone(lists))
           newData.map(item => item.id).map(id => {
             if (ids.indexOf(id) > -1) {
               cloneList = R.update(R.findIndex(R.propEq('id', id), lists),
@@ -94,7 +94,7 @@ class ListPage extends React.Component {
               cloneList.push(newData[R.findIndex(R.propEq('id', id), newData)])
             }
           })
-          console.log(cloneList)
+          // console.log(cloneList)
           return {
             lists: cloneList
           }
@@ -115,7 +115,7 @@ class ListPage extends React.Component {
     .then(json => {
       if (json.code !== 0) throw new Error(json.message)
       Toast.hide()
-      this.getBooks({pageSize: this.state.pageSize, page: this.state.page})
+      this.getBooks({pageSize: this.state.pageSize, page: this.state.page}, id)
     })
     .catch(err => {
       console.error(err)
@@ -198,9 +198,6 @@ class ListPage extends React.Component {
       this.setState({ refreshing: false })
       Toast.info(err.message, 1)
     })
-    // setTimeout(() => {
-    //   this.setState({ refreshing: false })
-    // }, 1000)
   }
 
   keepBookFn (val) {
