@@ -1,6 +1,7 @@
 .DS_STORE
 *.log
-
+dist/
+.git
 node_modules
 
 coverage
