@@ -12,6 +12,7 @@ type Props = {
   push: Function,
   clearUserMess: Function
 }
+// for git rebase
 class Home extends React.Component {
   props: Props
   constructor (props) {
