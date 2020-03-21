@@ -26,8 +26,8 @@ export default class Root extends React.Component {
           window.devToolsExtension.open()
         }
       } else if (!window.devToolsExtension) {
-        const DevTools = require('containers/DevTools').default
-        return <DevTools />
+        // const DevTools = require('containers/DevTools').default
+        // return <DevTools />
       }
     }
   }
